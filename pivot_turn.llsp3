@@ -1,0 +1,28 @@
+from hub import light_matrix, port
+import runloop, motor_pair, runloop, sys, math
+
+# Constants for Drive Base 1
+motor_pair.pair(motor_pair.PAIR_1, port.C, port.D)
+WHEEL_CIRCUMFERENCE = 17.5 # cm
+TRACK = 11.2 #cm - please measure your own robot.
+PIVOT_CIRCUMFERENCE = 2 * TRACK * math.pi
+
+async def pivot_turn(robot_degrees, motor_speed):
+    motor_degrees = int((PIVOT_CIRCUMFERENCE/WHEEL_CIRCUMFERENCE) * abs(robot_degrees))
+    if robot_degrees > 0:
+        # pivot clockwise
+        await motor_pair.move_for_degrees(motor_pair.PAIR_1, motor_degrees, 50, velocity=motor_speed)
+    else:
+        #pivot counter clockwise
+        await motor_pair.move_for_degrees(motor_pair.PAIR_1, motor_degrees, -50, velocity=motor_speed)
+
+async def main():
+    # Pivot 360 clockwise with speed 200
+    await pivot_turn(180, 200)
+    await runloop.sleep_ms(1000)
+    # Pivot 360 counterclockwise with speed 200
+    await pivot_turn(-180, 200)
+    await runloop.sleep_ms(1000)
+    sys.exit()
+
+runloop.run(main())
