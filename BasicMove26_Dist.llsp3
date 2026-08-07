@@ -1,0 +1,14 @@
+from hub import port
+import runloop
+import motor_pair
+
+WHEEL_CIRCUMFERENCE = 17.5 # cm, this is a constant for your robot
+def degreesForDistance(distance_cm): # input must be in the same unit as WHEEL_CIRCUMFERENCE
+    return int((distance_cm/WHEEL_CIRCUMFERENCE) * 360) # Add multiplier for gear ratio if needed
+
+async def main():
+    # Pair motors on port A and B
+    motor_pair.pair(motor_pair.PAIR_1, port.C, port.D)
+    motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(50), 0, velocity = 400)
+
+runloop.run(main())
