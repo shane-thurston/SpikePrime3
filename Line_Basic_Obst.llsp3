@@ -1,0 +1,41 @@
+from hub import port, sound
+import motor_pair, color_sensor, runloop, distance_sensor, math
+
+# Constants for Drive Base 1
+motor_pair.pair(motor_pair.PAIR_1, port.C, port.D)
+WHEEL_CIRCUMFERENCE = 17.5 # cm - please adjust according to your robot wheel
+TRACK = 11.2 # cm - please measure your own robot.
+SPIN_CIRCUMFERENCE = TRACK * math.pi
+
+async def spin_turn(robot_degrees, motor_speed):
+    motor_degrees = int((SPIN_CIRCUMFERENCE/WHEEL_CIRCUMFERENCE) * abs(robot_degrees))
+    # Include the spin turn code here
+
+def degreesForDistance(distance_cm):
+    # Include the degree for distance code here
+
+def obstacle_found():
+    #Include the obstacle found code here
+
+async def avoid_obstacle():
+    await runloop.sleep_ms(500)
+    await spin_turn(90, 200)
+    #complete the function to get around the obstacle
+
+async def line_follow_forever():
+    while (True):
+        if obstacle_found():
+            motor_pair.stop(motor_pair.PAIR_1)
+            runloop.run(avoid_obstacle())
+        else:
+            if (color_sensor.reflection(port.E) < 65): # sensor is on Black. Lower threshold as needed for your case.
+                # Turn right, i.e. away from Black
+                motor_pair.move(motor_pair.PAIR_1, 55, velocity = 300)
+            else: # sensor is on white
+                # Turn left, i.e. towards Black
+                motor_pair.move(motor_pair.PAIR_1, -55, velocity = 300)
+
+async def main():
+    await line_follow_forever()
+
+runloop.run(main())
